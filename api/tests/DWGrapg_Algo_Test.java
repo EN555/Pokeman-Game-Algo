@@ -159,8 +159,8 @@ class DWGrapg_Algo_Test {
 		
 		//save - load
 		directed_weighted_graph graph1 = ga.getGraph();
-		assertTrue(ga.save("g.txt"), "graph did'nt save");
-		assertTrue(ga.load("g.txt"), "garph did'nt load");
+		assertTrue(ga.save("g1.txt"), "graph did'nt save");
+		assertTrue(ga.load("g1.txt"), "garph did'nt load");
 		assertEquals(graph1 , ga.getGraph(), "loaded wrong graph");
 	}
 	

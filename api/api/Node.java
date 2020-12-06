@@ -23,7 +23,7 @@ public class Node implements node_data ,Comparable<node_data> {
 	this.key = key;
 	this.tag = 0;
 	this.info = "";
-	this.location = null;
+	this.location = Point3D.ORIGIN;
 	this.weight = weight;
 	this.neighbors = new HashMap<Integer,edge_data>();
 	}
@@ -38,7 +38,7 @@ public class Node implements node_data ,Comparable<node_data> {
 		this.tag = 0;
 		this.weight=0;
 		this.info = "";
-		this.location = null;
+		this.location = Point3D.ORIGIN;;
 		this.weight = 0;
 		this.neighbors = new HashMap<Integer,edge_data>();
 		}

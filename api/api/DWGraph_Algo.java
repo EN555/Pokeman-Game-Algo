@@ -233,17 +233,52 @@ public class DWGraph_Algo implements dw_graph_algorithms ,JsonDeserializer<DWGra
 		if(this.g == null)			//check if it's null graph
 			return false; 
 		
-		//Make Json
+		/*
+		 * //if empty graph if(this.g.nodeSize() == 0) { try {
+		 * 
+		 * PrintWriter pw = new PrintWriter(new File(file));
+		 * pw.write("{\"Nods\":[],\"Edges\":[]}"); pw.close();
+		 * 
+		 * } catch(Exception e) { return false; //e.printStackTrace(); } return true; }
+		 */
 		
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();		//create json		
-		String json = gson.toJson(this.g);	
+		
+		
+		
+		StringBuilder jb = new StringBuilder("{\"Edges\":[");
+		
+		//add all the edges
+		for(node_data node : this.g.getV()) {
+			for(edge_data edge : this.g.getE(node.getKey())) {
+				jb.append("{\"src\":"); jb.append(edge.getSrc()); 
+				jb.append(",\"w\":"); jb.append(edge.getWeight());
+				jb.append(",\"dest\":"); jb.append(edge.getDest()); jb.append("},");
+			}
+		}
+		
+		if(this.g.edgeSize() != 0)
+			jb.deleteCharAt(jb.length() -1); //remove the last comma
+		
+		//add all the nodes
+		jb.append("],\"Nodes\":[");
+		for(node_data node : this.g.getV()) {
+			jb.append("{\"pos\":\""); jb.append(node.getLocation().toString()); jb.append("\"");
+			jb.append(",\"id\":"); jb.append(node.getKey()); jb.append("},");
+		}
+		
+		if(this.g.nodeSize() != 0)
+			jb.deleteCharAt(jb.length() -1); //remove the last comma
+		
+		jb.append("]}");
+		
+		
 		
 		//write json to file
 		
 		try {
 		
 			PrintWriter pw = new PrintWriter(new File(file));
-			pw.write(json);
+			pw.write(jb.toString());
 			pw.close();
 		
 		}
@@ -266,53 +301,28 @@ public class DWGraph_Algo implements dw_graph_algorithms ,JsonDeserializer<DWGra
 		
 		JsonObject jsonObject = json.getAsJsonObject();
 		
-		JsonObject NodeObject = jsonObject.get("nodes").getAsJsonObject();	//return the hashmap of the edges as object		
-		JsonObject EdgeObject = jsonObject.get("edges").getAsJsonObject();	//return the hashmap of the nodes as object
-
-		
-		//move on the hashmap of the nodes
+		JsonArray NodeArray = jsonObject.get("Nodes").getAsJsonArray();	//get the list of nodes		
+		JsonArray EdgeArray = jsonObject.get("Edges").getAsJsonArray(); //get the list of edges
 	
-		
-		for(Entry<String,JsonElement> set : NodeObject.entrySet()) {	
-
-			node_data node = new Node(Integer.parseInt(set.getKey()));	//convert the string key to integer 
+		//add all the nodes
+		for(JsonElement n : NodeArray) {	
 			
-			//enter the simple fileds of the json node to the new node
+			JsonObject no = n.getAsJsonObject();
 			
-			JsonElement JsonFields = set.getValue();
-			int key = JsonFields.getAsJsonObject().get("key").getAsInt();
-			int tag = JsonFields.getAsJsonObject().get("tag").getAsInt();
-			node.setTag(tag);	
-			String info = JsonFields.getAsJsonObject().get("info").getAsString();
-			node.setInfo(info);
-			double weight = JsonFields.getAsJsonObject().get("weight").getAsDouble();
-			node.setWeight(weight);
+			//create the node
+			node_data node = new Node(no.get("id").getAsInt() , 0 , "" , new Point3D(no.get("pos").getAsString()));
 			
-			graph.addNode(node);				//add the current node to the graph
-			
+			graph.addNode(node);	//add the current node to the graph	
 		}
 		
-		//move on the hashmap of the edges and do connect 
-		
-		for(Entry<String,JsonElement> set : EdgeObject.entrySet()) {
-		
-				//extract all the parameters of the edge
+		//add all the edges
+		for(JsonElement e : EdgeArray) {
 			
-			int src = set.getValue().getAsJsonObject().get("src").getAsInt();
-			int dest = set.getValue().getAsJsonObject().get("dest").getAsInt();
-			double weight = set.getValue().getAsJsonObject().get("weight").getAsDouble();
-			String info = set.getValue().getAsJsonObject().get("info").getAsString();
-			int tag = set.getValue().getAsJsonObject().get("tag").getAsInt();
+			JsonObject eo = e.getAsJsonObject();
 			
-			graph.connect(src, dest, weight);		//with connect operation all the other insertion operation did automatically
-			
-			Edge temp = (Edge)graph.getEdge(src, dest);
-
-			temp.setInfo(info);		//update the rest of the parameters that connect hasn't insert 
-			temp.setTag(tag);
-			
+			//connect the given edge
+			graph.connect(eo.get("src").getAsInt(), eo.get("dest").getAsInt(), eo.get("w").getAsDouble());
 		}
-		
 		
 		return graph;
 	}
