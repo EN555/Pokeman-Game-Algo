@@ -18,6 +18,7 @@ public class Ex2_Client implements Runnable{
 	public static void main(String[] a) {
 		Thread client = new Thread(new Ex2_Client());
 		client.start();
+
 	}
 	
 	@Override
