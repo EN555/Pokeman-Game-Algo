@@ -1,112 +1,151 @@
 package gameClient;
 
-import java.awt.Point;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.gson.JsonObject;
-
 import api.directed_weighted_graph;
 import api.edge_data;
+import api.geo_location;
 import api.node_data;
-import api.Point3D;
+import api.DWGraph_Algo;
 
 public class Arena{
-private directed_weighted_graph graph;
-private List<CL_Agent> agents;
-private List<CL_Pokemon> pokemons;		//create list of pokemon object from Json
+	private directed_weighted_graph graph;
+	private List<CL_Agent> agents;
+	private List<CL_Pokemon> pokemons;
 
-public Arena() {
+	// *****  constructors  *****
+	
+	public Arena() {}
+	
+	public Arena(String graphJson , String pokemonJson , String agentJson) {
+		read_graph(graphJson);
+		read_pokemons(pokemonJson);
+		read_agents(agentJson);
+	}
+	
+	// *****  methods  *****
+	
+	//getters
+	public directed_weighted_graph getGraph() {return graph;}
+	public List<CL_Agent> getAgents(){return agents;}
+	public List<CL_Pokemon> getPokemons(){return pokemons;}
 	
 	
-}
+	/**
+	 * set the graph from a json string
+	 * @param json
+	 */
+	public void read_graph(String json) {
+		DWGraph_Algo ga = new DWGraph_Algo();
+		if(ga.load(json))
+			this.graph = ga.getGraph();
+		else
+			System.out.println("could not read the graph from json");
+	}
 
-public void generatePokemonFromJson() {
-	
-	
-	
-	
-}
 
-
-public void generateagentsFromJson() {
-	
-	
-	
-	
-}
-
-/**
- * 
- * @param jsonPokemon - get pokemon json string from the server and need to convert it to object of pokemon
- */
-	public void generatePokemonFromJson(String jsonPokemon) {	//{"Pokemons":[{"Pokemon":{"value":5.0,"type":-1,"pos":"35.20273974670703,32.10439601193746,0.0"}}]}
-	
+	/**
+	 * read the pokemons list from json String
+	 * @param json
+	 */
+	public void read_pokemons(String json) {
+		List<CL_Pokemon> pokemon_list = new LinkedList<CL_Pokemon>();
+		
 		try {
-			JSONObject allPokemons= new JSONObject(jsonPokemon);	//get json of all the pokemons	
-		
-			ArrayList<CL_Pokemon> jsonArray = new ArrayList<CL_Pokemon>();	//create array of pokemons to insert them
+			JSONObject data = new JSONObject(json);
+			JSONArray pokemons = data.getJSONArray("Pokemons");
 			
-			JSONArray array = allPokemons.getJSONArray("Pokemons");	//every pokemon contain in the array
-			
-			for(int i= 0; i<array.length() ; i++) {	//move on all the array and extract the parameters of the pokemon
-				
-				JSONObject pokemon  = array.getJSONObject(i);
-				JSONObject pokemonParameters = pokemon.getJSONObject("Pokemon");
-			
-				//create all the pokemons
-			
-				int type = pokemonParameters.getInt("type");
-				double value = pokemonParameters.getDouble("value");
-				String position = pokemonParameters.getString("pos");
-						
-				//find the edge of the current pokemon according to the positon and type
-				
-				edge_data edge = getEdgePokemon(new Point3D(position) , type); 
-					
-				CL_Pokemon pok = new CL_Pokemon(new Point3D(position),value ,type , null);
+		//read all the pokemons
+		for(int i = 0 ; i < pokemons.length() ; i++) {
+			String pok = pokemons.getJSONObject(i).getJSONObject("Pokemon").toString();
+			CL_Pokemon pokemon = CL_Pokemon.generate_from_json(pok);	//generate the pokemon
+			pokemon.setEdge(getPokemonEdge(pokemon));					//set it's edge
+			pokemon_list.add(pokemon);									//add it to the list
 		}
-	
-	}
-	
-	catch (JSONException e) {
-		e.printStackTrace();
-	}
-	
-}
-	
-public edge_data getEdgePokemon(Point3D point , int type) {
-	
-	edge_data pokemonEdge = null;
-	
-	Iterator<node_data> nodesIterator = this.graph.getV().iterator(); 
-	
-	while(nodesIterator.hasNext()) {    //move on all the nodes of the graph and look for the edge that pokemon sit on her
-		
-		Iterator<edge_data> edgesIterator = this.graph.getE(nodesIterator.next().getKey()).iterator();	//move on all the edges in the graph	
-		
-		edge_data temp = edgesIterator.next();
-		
-		if(temp.getSrc() < point.x() && temp.getDest() < point.y()) {	//check if the pokemon sit between them
-		
-			if(temp.getDest() - temp.getSrc() >0 && type ==1) {  //it the (dest - src) > 0 so the edge in positive slope 
-				pokemonEdge = temp;
-			}
-			if(temp.getDest() - temp.getSrc() < 0 && type == -1) { //it the (dest - src) > 0 so the edge in negative slope
-				pokemonEdge = temp;
-			}
 			
+		this.pokemons = pokemon_list;	//set the list of pokemons
+		} 
+		
+		catch (JSONException e) {
+			e.printStackTrace();
 		}
+		
+		
 	}
 	
 	
-	return pokemonEdge;
-}
+	
+	/**
+	 * get the edge in the graph that the pokemon is on
+	 * @param pokemon
+	 * @return
+	 */
+	private edge_data getPokemonEdge(CL_Pokemon pokemon) {
 
+		//iterate through all the edges
+		for(node_data node : this.graph.getV()) {
+			for(edge_data edge : this.graph.getE(node.getKey())) {
+				//if found the right edge, return it
+				if(isOnEdge(pokemon.getPos() , edge)) {	
+					return edge;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * check if a given point is on a given edge in the graph
+	 * @param p
+	 * @param edge
+	 * @return
+	 */
+	private boolean isOnEdge(geo_location p , edge_data edge) {
+		final double EPS = 0.0001;
+		
+		//get the src and dest locations
+		geo_location srcP = this.graph.getNode(edge.getSrc()).getLocation();
+		geo_location destP = this.graph.getNode(edge.getDest()).getLocation();
+		
+		//calculate the distance from src to dest
+		double dis = srcP.distance(destP);
+		//calculate the distance from src to dest, through p
+		double dis_p = p.distance(srcP) + p.distance(destP);
+		
+		//check if the distances are the same (with tiny error)
+		return (Math.abs(dis - dis_p) < EPS);
+	}
+	
+	
+	/**
+	 * read the agents list from json String
+	 * @param json
+	 */
+	public void read_agents(String json) {
+		List<CL_Agent> agents_list = new LinkedList<CL_Agent>();
+		
+		try {
+			JSONObject data = new JSONObject(json);
+			JSONArray Agents = data.getJSONArray("Agents");
+			
+		//read all the agents
+		for(int i = 0 ; i < Agents.length() ; i++) {
+			String agen = Agents.getJSONObject(i).getJSONObject("Agent").toString();
+			CL_Agent agent = CL_Agent.generate_from_json(agen);			//generate the agent
+			agents_list.add(agent);										//add it to the list
+		}
+			
+		this.agents = agents_list;	//set the list of pokemons
+		} 
+		
+		catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

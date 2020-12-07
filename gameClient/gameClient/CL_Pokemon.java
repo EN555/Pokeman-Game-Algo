@@ -1,6 +1,10 @@
 package gameClient;
 
 import api.edge_data;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import api.Point3D;
 public class CL_Pokemon{
 	
@@ -49,6 +53,29 @@ public class CL_Pokemon{
 
 	public void setEdge(edge_data edge) {
 		this.edge = edge;
+	}
+	
+	/**
+	 * generate a pokemon from a json string
+	 * @param json
+	 * @return
+	 */
+	public static CL_Pokemon generate_from_json(String json) {
+		try {
+			JSONObject data = new JSONObject(json);
+			
+			//get all the fields as their types
+			double value = data.getDouble("calue");
+			int type = data.getInt("type");
+			Point3D pos = new Point3D(data.getString("pos"));
+			
+			//return the pokemon object
+			return new CL_Pokemon(pos , value , type , null);
+		}
+		catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	
