@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.PriorityQueue;
 import com.google.gson.*;
 
+import Server.Game_Server_Ex2;
+import gameClient.Arena;
+
 public class DWGraph_Algo implements dw_graph_algorithms ,JsonDeserializer<DWGraph_DS> {
 	
 	private directed_weighted_graph g;
@@ -401,12 +404,15 @@ public class DWGraph_Algo implements dw_graph_algorithms ,JsonDeserializer<DWGra
 //			System.out.println(alg.save("empty.txt"));
 //			System.out.println(alg.shortestPathDist(4,1));
 			
-			LinkedList<node_data> list = new LinkedList<node_data>(graph.getV());
+//			LinkedList<node_data> list = new LinkedList<node_data>(graph.getV());
 			
-			System.out.println(list);
-			System.out.println(graph.getV());
+//			System.out.println(list);
+//			System.out.println(graph.getV());
 			
-			
+			game_service game = Game_Server_Ex2.getServer(3); // you have [0,23] games
+			DWGraph_Algo algor = new DWGraph_Algo();
+			System.out.println(algor.load(game.getGraph()));
+			System.out.println(game.getGraph());
 		}
 	
 }
