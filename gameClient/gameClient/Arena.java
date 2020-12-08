@@ -95,7 +95,18 @@ public class Arena{
 			for(edge_data edge : this.graph.getE(node.getKey())) {
 				//if found the right edge, return it
 				if(isOnEdge(pokemon.getPos() , edge)) {	
-					return edge;
+					
+					edge_data revers_edge = this.graph.getEdge(edge.getDest(), edge.getSrc());
+					if(revers_edge == null)		//no reversed edge - return
+						return edge;
+					else { 						//reversed edge exist
+						int min_node = Math.min(edge.getDest(), edge.getSrc());
+						int max_node=  Math.min(edge.getDest(), edge.getSrc());
+						if(pokemon.getType() == 1) 	//check the type
+							return this.graph.getEdge(min_node, max_node);
+						else
+							return this.graph.getEdge(max_node, min_node);
+					}		
 				}
 			}
 		}
