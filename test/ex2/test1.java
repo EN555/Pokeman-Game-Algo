@@ -12,7 +12,7 @@ public class test1 {
 		
 		String s = game.getPokemons();
 		
-		System.out.println(s);
+		System.out.println(game);
 		
 		
 	}

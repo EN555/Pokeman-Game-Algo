@@ -7,11 +7,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import api.directed_weighted_graph;
 import api.edge_data;
 import api.geo_location;
 import api.node_data;
 import api.DWGraph_Algo;
+import api.DWGraph_DS;
 
 public class Arena{
 	private directed_weighted_graph graph;
@@ -41,11 +45,10 @@ public class Arena{
 	 * @param json
 	 */
 	public void read_graph(String json) {
-		DWGraph_Algo ga = new DWGraph_Algo();
-		if(ga.load(json))
-			this.graph = ga.getGraph();
-		else
-			System.out.println("could not read the graph from json");
+		GsonBuilder builder = new GsonBuilder();								//create json object
+		builder.registerTypeAdapter(DWGraph_DS.class, new DWGraph_Algo());		//adapt between the object class to the way to read json that create from this class
+		Gson gson = builder.create();
+		this.graph = gson.fromJson(json, DWGraph_DS.class);
 	}
 
 

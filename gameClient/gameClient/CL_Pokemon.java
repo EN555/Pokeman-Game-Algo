@@ -65,7 +65,7 @@ public class CL_Pokemon{
 			JSONObject data = new JSONObject(json);
 			
 			//get all the fields as their types
-			double value = data.getDouble("calue");
+			double value = data.getDouble("value");
 			int type = data.getInt("type");
 			Point3D pos = new Point3D(data.getString("pos"));
 			
