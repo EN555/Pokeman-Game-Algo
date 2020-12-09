@@ -32,6 +32,11 @@ public class Arena{
 		read_agents(agentJson);
 	}
 	
+	public Arena(String graphJson , String pokemonJson) {
+		read_graph(graphJson);
+		read_pokemons(pokemonJson);
+	}
+	
 	// *****  methods  *****
 	
 	//getters
@@ -94,19 +99,19 @@ public class Arena{
 		for(node_data node : this.graph.getV()) {
 			for(edge_data edge : this.graph.getE(node.getKey())) {
 				//if found the right edge, return it
-				if(isOnEdge(pokemon.getPos() , edge)) {	
-					
+				if(isOnEdge(pokemon.getPos() , edge)) {					
 					edge_data revers_edge = this.graph.getEdge(edge.getDest(), edge.getSrc());
 					if(revers_edge == null)		//no reversed edge - return
 						return edge;
 					else { 						//reversed edge exist
 						int min_node = Math.min(edge.getDest(), edge.getSrc());
-						int max_node=  Math.min(edge.getDest(), edge.getSrc());
+						int max_node=  Math.max(edge.getDest(), edge.getSrc());
 						if(pokemon.getType() == 1) 	//check the type
 							return this.graph.getEdge(min_node, max_node);
 						else
 							return this.graph.getEdge(max_node, min_node);
-					}		
+					}	
+
 				}
 			}
 		}
@@ -134,7 +139,13 @@ public class Arena{
 		//check if the distances are the same (with tiny error)
 		return (Math.abs(dis - dis_p) < EPS);
 	}
-	
+	/**
+	 * @param json string of all the agents
+	 * update the field agent of the class
+	 */
+	public void setAgents(String json) {
+		read_agents(json);
+	}
 	
 	/**
 	 * read the agents list from json String

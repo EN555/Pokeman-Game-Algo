@@ -328,7 +328,7 @@ public class DWGraph_Algo implements dw_graph_algorithms ,JsonDeserializer<DWGra
 		
 		return graph;
 	}
-
+	
 	/**
 	 * load the current class with graph from Json
 	 */

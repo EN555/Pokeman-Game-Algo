@@ -33,7 +33,7 @@ public class MyFrame extends JFrame{
 
 	public static void main(String [] args) {
 
-		game_service game = Game_Server_Ex2.getServer(3);
+		game_service game = Game_Server_Ex2.getServer(21);
 		game.addAgent(0);
 		Arena arena = new Arena(game.getGraph() , game.getPokemons() , game.getAgents());
 		MyFrame g = new MyFrame("level 3" , arena);
