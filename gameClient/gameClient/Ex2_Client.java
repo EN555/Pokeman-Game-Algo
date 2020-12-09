@@ -71,7 +71,7 @@ public class Ex2_Client{
 		game_service game = Game_Server_Ex2.getServer(22);
 		Ex2_Client client = new Ex2_Client(game);
 //		System.out.println(game);
-//		System.out.println(game.getAgents());
+//		System.out.println(game.getGraph());
 	
 	}
 	
@@ -178,11 +178,14 @@ public class Ex2_Client{
 		
 			while(iterAgents.hasNext()) {
 				CL_Agent agent = iterAgents.next();
-				int src = agent.getSrc();
-				int pokSrc = this.map.get(src).getFirst().getEdge().getSrc();
+				int src = agent.getSrc();				
+				int pokSrc = this.map.get(src).getFirst().getEdge().getDest();			//getFirst().getEdge().getSrc();
 				if(src != pokSrc) {		//look for the shortest path to the closet pokeman
-					this.game.chooseNextEdge(agent.getId() , algo.shortestPath(src, pokSrc).iterator().next().getKey());
-					System.out.println("Agent: "+agent.getId()+", val: "+agent.getValue()+"   turned to node: "+pokSrc);
+					ListIterator<node_data> iterAg = (ListIterator<node_data>)algo.shortestPath(src, pokSrc).listIterator();
+					iterAg.next();
+					node_data dest= iterAg.next();
+					this.game.chooseNextEdge(agent.getId() ,dest.getKey());
+					System.out.println("Agent: "+agent.getId()+", val: " +agent.getValue()+"   turned to node: "+dest.getKey());
 				}
 				else {
 					this.game.chooseNextEdge(agent.getId(),this.map.get(src).getFirst().getEdge().getDest());
