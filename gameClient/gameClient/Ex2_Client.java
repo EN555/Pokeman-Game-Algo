@@ -1,10 +1,13 @@
 package gameClient;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 
 import org.json.JSONException;
@@ -17,6 +20,7 @@ import Server.Game_Server_Ex2;
 import api.DWGraph_Algo;
 import api.DWGraph_DS;
 import api.directed_weighted_graph;
+import api.dw_graph_algorithms;
 import api.edge_data;
 import api.game_service;
 import api.node_data;
@@ -28,6 +32,7 @@ public class Ex2_Client{
 	private Arena arena;
 	private int numberOfagents=0;
 	private game_service game;
+	private double timerRel=1 ;		//chek every move if the agent go to it pokeman and affect on the Threed.sleep time (the goal is not to wate move call)
 	private HashMap<Integer, LinkedList<CL_Pokemon>> map ;  //Integer represent node and CL_pokman represent all the pokemons that closet to him 
 
 	/**
@@ -37,9 +42,9 @@ public class Ex2_Client{
 
 		this.game = game;
 		this.numberOfagents = numberOfagents(game); //get the number of agents
-		this.map = new HashMap<Integer, LinkedList<CL_Pokemon>>();
-		updateMap();
-		initAgents();
+		this.map = new HashMap<Integer, LinkedList<CL_Pokemon>>();		//Integer - node id , linked list represent all the pokeman at ascending distance order
+		updateMap();	//create the hashmap
+		initAgents();	//locate all the agent at specific places
 		this.arena = new Arena(this.game.getGraph() , this.game.getPokemons() , this.game.getAgents());	//update the arena field
 
 		//get level
@@ -47,16 +52,17 @@ public class Ex2_Client{
 		MyFrame frame = new MyFrame("Level " + getLevel(game), this.arena);
 		frame.setVisible(true);
 		
-		game.startGame();
+		//start the game
 		
+		game.startGame();
 		while(game.isRunning()) {	//stop the game when the game will finish
 			
-			moveAgents();
-			this.arena.setAgents(this.game.getAgents());
-			
+			updateMap();		//every move need to update the map according to the new pokemans
+			moveAgents();		//move the agents according to the map
+			this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
 			try {
-				Thread.sleep(800);
 				frame.repaint();
+				Thread.sleep((int)(200/this.timerRel));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -68,10 +74,10 @@ public class Ex2_Client{
 	
 		//for (1 -> 23) move on all the games
 		
-		game_service game = Game_Server_Ex2.getServer(22);
+		game_service game = Game_Server_Ex2.getServer(11);
 		Ex2_Client client = new Ex2_Client(game);
-//		System.out.println(game);
-//		System.out.println(game.getGraph());
+		String res = game.toString();
+		System.out.println(res);
 	
 	}
 	
@@ -95,8 +101,8 @@ public class Ex2_Client{
 		
 		while(iterNodes.hasNext()) {		//move on all the nodes
 			node_data node = iterNodes.next();
-			
-			HashMap<Double, CL_Pokemon> helper = new HashMap< Double , CL_Pokemon>(); // double represent the distance from the current node
+			LinkedList<CL_Pokemon> listPok = new LinkedList<CL_Pokemon>();
+			HashMap<Double, CL_Pokemon> helper = new HashMap<Double ,  CL_Pokemon>(); // double represent the distance from the current node
 			
 			//create linked list for all the pokemons in the current node 
 			
@@ -106,17 +112,24 @@ public class Ex2_Client{
 				double dis = algo.shortestPathDist(node.getKey(), nodePok); 
 				
 				if(dis != -1) {		//check if have path like that 
-					helper.put(dis , pok);		//if two have same distance?
+					helper.put(dis , pok);		//if two have same distance it'snt change because that he will reach to this destination
 				}				
 			}
 			
-			//insert it to list and insert it to hashmap
-			LinkedList<CL_Pokemon> list = new LinkedList<CL_Pokemon>(helper.values());
-			this.map.put(node.getKey(), list);
+			Object arr [] = new Object[helper.size()];
+			arr = helper.keySet().toArray();			
+			Arrays.sort(arr);
+			
+			for(int i= 0 ; i < arr.length ; i++) {
+				listPok.add(helper.get((double)arr[i]));
+			}
+			
+			this.map.put(node.getKey() , listPok);
 			iterPok = pokemons.listIterator();
 		}
 		
 	}
+	
 		
 	/**
 	 * @param game game with specific level
@@ -171,29 +184,40 @@ public class Ex2_Client{
 	
 	public void moveAgents() {
 		
+		int counter = 0 ; //counter the number of agents that need to it in this move
+		
 		LinkedList<CL_Agent> agents = new LinkedList<CL_Agent>(this.arena.getAgents());
 		ListIterator<CL_Agent> iterAgents = agents.listIterator();
 		DWGraph_Algo algo = new DWGraph_Algo();
 		algo.init(this.arena.getGraph());
 		
-			while(iterAgents.hasNext()) {
+			while(iterAgents.hasNext()) {		//move on all the agents and locate them
 				CL_Agent agent = iterAgents.next();
 				int src = agent.getSrc();				
-				int pokSrc = this.map.get(src).getFirst().getEdge().getDest();			//getFirst().getEdge().getSrc();
+				int pokSrc = this.map.get(src).getFirst().getEdge().getDest();			
 				if(src != pokSrc) {		//look for the shortest path to the closet pokeman
 					ListIterator<node_data> iterAg = (ListIterator<node_data>)algo.shortestPath(src, pokSrc).listIterator();
-					iterAg.next();
+					iterAg.next();		//the first is the vertex himself and neet to remove him
 					node_data dest= iterAg.next();
-					this.game.chooseNextEdge(agent.getId() ,dest.getKey());
+					this.game.chooseNextEdge(agent.getId() ,dest.getKey());			// <---*----(*)	, (*) - agent, * - pokeman
 					System.out.println("Agent: "+agent.getId()+", val: " +agent.getValue()+"   turned to node: "+dest.getKey());
+					
+					//check if this agent and pokeman founded on the same edge
+					if(dest.getKey() - this.map.get(src).getFirst().getEdge().getDest() == 0)	// look like that -1-<---*---(*)-0-
+							counter++;
 				}
 				else {
-					this.game.chooseNextEdge(agent.getId(),this.map.get(src).getFirst().getEdge().getDest());
-				//	System.out.println("Agent: "+agent.getId()+", val: "+agent.getValue()+"   turned to node: "+pokSrc);
-
+					ListIterator<node_data> iterAg = (ListIterator<node_data>)algo.shortestPath(src, this.map.get(src).getFirst().getEdge().getSrc()).listIterator();
+					iterAg.next();		//the first is the vertex himself and neet to remove him
+					node_data dest= iterAg.next();
+					this.game.chooseNextEdge(agent.getId(), dest.getKey());	// ---*--->(*) , (*) - agent, * - pokeman
+					System.out.println("Agent: "+agent.getId()+", val: "+agent.getValue()+"   turned to node: "+pokSrc);
 				}
 				
 			}
+			
+			if(counter == 0)	//check if no one need to it at this move
+				this.timerRel = 0.65;
 			this.game.move();
 		
 	}

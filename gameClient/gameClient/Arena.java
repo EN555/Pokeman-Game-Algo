@@ -143,8 +143,9 @@ public class Arena{
 	 * @param json string of all the agents
 	 * update the field agent of the class
 	 */
-	public void setAgents(String json) {
+	public void setAgents(String json , String json2) {
 		read_agents(json);
+		read_pokemons(json2);
 	}
 	
 	/**
