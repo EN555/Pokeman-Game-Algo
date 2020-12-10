@@ -3,6 +3,7 @@ package gameClient;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -49,7 +50,7 @@ public class Ex2_Client{
 
 		//get level
 		
-		MyFrame frame = new MyFrame("Level " + getLevel(game), this.arena);
+		this.frame = new MyFrame("Level " + getLevel(game), this.arena);
 		frame.setVisible(true);
 		
 		//start the game
@@ -127,6 +128,15 @@ public class Ex2_Client{
 			this.map.put(node.getKey() , listPok);
 			iterPok = pokemons.listIterator();
 		}
+		
+		//try
+		
+		LinkedList<CL_Pokemon> ls = new LinkedList<CL_Pokemon>();
+		
+		
+		//	for(Entry<Integer, V>)
+		
+		//
 		
 	}
 	
