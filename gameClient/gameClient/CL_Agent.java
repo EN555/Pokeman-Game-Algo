@@ -18,8 +18,7 @@ public class CL_Agent{
 	private int dest;
 	private final double speed;
 	private geo_location pos;
-	Queue<node_data> way = new LinkedList<node_data>();
-	
+	CL_Pokemon current_pok;	
 	
 	// *****  constructors ******
 	

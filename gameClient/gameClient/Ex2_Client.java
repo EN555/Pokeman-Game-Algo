@@ -153,13 +153,6 @@ public class Ex2_Client{
 			//if the agent has no destination
 			if(agent.getDest() == -1){
 
-				//check if has queued destinations
-				if(!agent.way.isEmpty()) {
-					game.chooseNextEdge(agent.getId(), agent.way.poll().getKey());
-				}
-
-				//if not, find a new destination
-				else {
 					CL_Pokemon min_pok = this.arena.getPokemons().get(0);
 					double min_dis = ga.shortestPathDist(agent.getSrc(), min_pok.getEdge().getSrc()) + min_pok.getEdge().getWeight();
 
@@ -175,21 +168,24 @@ public class Ex2_Client{
 					}
 
 					//set the new pokemon as the destination for the agent
-					List<node_data> path = ga.shortestPath(agent.getSrc(), min_pok.getEdge().getSrc());		//calculate the way
-					path.add(this.arena.getGraph().getNode(min_pok.getEdge().getDest()));					//add the dest
-					path.remove(0);																			//remove the source node
-					for(node_data n : path) {agent.way.add(n);}												//add to the agent queue
-					game.chooseNextEdge(agent.getId(), agent.way.poll().getKey());							//set the next destination
-					this.to_be_picked.add(min_pok);															//mark
-				}	
+					this.to_be_picked.remove(agent.current_pok);	//replace the pokemon to be picked
+					agent.current_pok = min_pok;
+					this.to_be_picked.add(min_pok);
+					if(agent.getSrc() == min_pok.getEdge().getSrc()) {			//if on the pokemon source, set to the destination
+						game.chooseNextEdge(agent.getId(), min_pok.getEdge().getDest());
+						}
+					else {	//if not, set to the source
+						node_data next = ga.shortestPath(agent.getSrc(), min_pok.getEdge().getSrc()).get(1);
+						game.chooseNextEdge(agent.getId(), next.getKey());
+					}	
+				}		
+					
 			}
-		}
 
 		if(!is_agent_eat){this.timerRel = 0.65;}	//check if no one need to eat soon
-		else {this.timerRel = 1;}
+		else {this.timerRel = 1.5;}
 		this.game.move();
 
-	}
-
+		}
 
 }
