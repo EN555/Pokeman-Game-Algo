@@ -20,6 +20,13 @@ public class CL_Pokemon{
 		this.edge =edge;
 				
 	}
+	
+	public CL_Pokemon() {
+		this.value = 0;
+		this.type= 0;
+		this.pos = null;
+		this.edge = null;
+	}
 
 	//setters and getters
 	
@@ -55,6 +62,15 @@ public class CL_Pokemon{
 		this.edge = edge;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if(this.getPos().x() == ((CL_Pokemon)o).getPos().x() &&
+				this.getPos().y() == ((CL_Pokemon)(o)).getPos().y()) { 
+							return true;
+		}
+
+	return false;
+	}
 	/**
 	 * generate a pokemon from a json string
 	 * @param json
