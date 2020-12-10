@@ -1,10 +1,14 @@
 package gameClient;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.Point3D;
 import api.geo_location;
+import api.node_data;
 
 public class CL_Agent{
 	
@@ -14,7 +18,7 @@ public class CL_Agent{
 	private int dest;
 	private final double speed;
 	private geo_location pos;
-	
+	CL_Pokemon current_pok;	
 	
 	// *****  constructors ******
 	
