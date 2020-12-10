@@ -1,11 +1,13 @@
 package gameClient;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ComponentListener;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import Server.Game_Server_Ex2;
 import api.game_service;
@@ -15,6 +17,7 @@ import api.node_data;
 public class MyFrame extends JFrame{
 
 	private static final long serialVersionUID = 1L;
+	private game_service game;
 
 	public MyFrame(String name , Arena arena) {
 
@@ -28,11 +31,27 @@ public class MyFrame extends JFrame{
 		
 		MyPanel panel = new MyPanel(this.getWidth(), this.getHeight() , arena);
 		this.add(panel);
+		//this.add(new clock(this.getHeight(),  this.getWidth()));
 	}
 
 
+	public game_service getGame() {return game;}
+	public void setGame(game_service game) {this.game = game;}
 
-
+//
+//	private class clock extends JPanel{
+//		private static final long serialVersionUID = 1L;
+//		private double time = 0;
+//		private int frame_h;
+//		private int frame_w;
+//		public clock(int h, int w) {this.frame_h = h; this.frame_w = w;}
+//		
+//		@Override
+//		public void paint(Graphics g) {
+//			this.time = game.timeToEnd();
+//			g.drawString("sconds left for the game:\n"+this.time/1000, 0, 0);//this.frame_w - this.frame_w/10,  this.frame_h - this.frame_h/10);
+//		}	
+//	}
 
 	public static void main(String [] args) {
 

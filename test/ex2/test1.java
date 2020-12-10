@@ -15,7 +15,7 @@ public class test1 {
 		
 		ga.load("data/A5");
 		
-		System.out.println(ga.isConnected());
+		//System.out.println(ga.isConnected());
 		
 		
 //		int[] arr = {1,2,3};
@@ -37,6 +37,17 @@ public class test1 {
 //		String s = game.getPokemons();
 //		
 //		System.out.println(game);
+		
+		
+		for(int i= 0 ; i<10 ; i++) {
+			for(int j=0; j<10;j++) {
+				break;
+
+			}
+		System.out.println(i);
+		}
+		
+		
 		
 		
 	}
