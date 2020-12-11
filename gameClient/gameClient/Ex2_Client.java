@@ -62,7 +62,6 @@ public class Ex2_Client{
 
 		game.startGame();
 		while(game.isRunning()) {	//stop the game when the game will finish
-
 			moveAgents();		//move the agents according to the map
 			this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
 			try {
@@ -80,7 +79,7 @@ public class Ex2_Client{
 
 		//for (1 -> 23) move on all the games
 
-		game_service game = Game_Server_Ex2.getServer(11);
+		game_service game = Game_Server_Ex2.getServer(1);
 		Ex2_Client client = new Ex2_Client(game);
 		String res = game.toString();
 		System.out.println(res);
@@ -281,7 +280,7 @@ public class Ex2_Client{
 					
 			}
 
-		if(!is_agent_eat){this.timerRel = 0.65;}	//check if no one need to eat soon
+		if(!is_agent_eat){this.timerRel = 4;}	//check if no one need to eat soon
 		else {this.timerRel = 1.5;}
 		this.game.move();
 

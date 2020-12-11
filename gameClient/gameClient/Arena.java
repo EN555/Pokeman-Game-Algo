@@ -125,7 +125,7 @@ public class Arena{
 	 * @return
 	 */
 	private boolean isOnEdge(geo_location p , edge_data edge) {
-		final double EPS = 0.0001;
+		final double EPS = 0.000001;
 		
 		//get the src and dest locations
 		geo_location srcP = this.graph.getNode(edge.getSrc()).getLocation();
