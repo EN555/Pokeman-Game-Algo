@@ -6,19 +6,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.Point3D;
-public class CL_Pokemon{
-	
-	private double value;	
-	private int type;		// 1/-1 , 1 = if the pokemon on (3,2) edge, 1- represent that he stand on the edge from the low place to the high 
-	private Point3D pos;	//the location of the pokemon
-	private edge_data edge;	//edge that the pokemon founded there
-	
-	public CL_Pokemon(Point3D position , double value , int type , edge_data edge) {
+
+public class CL_Pokemon {
+
+	private double value;
+	private int type; // 1/-1 , 1 = if the pokemon on (3,2) edge, 1- represent that he stand on the
+						// edge from the low place to the high
+	private Point3D pos; // the location of the pokemon
+	private edge_data edge; // edge that the pokemon founded there
+
+	public CL_Pokemon(Point3D position, double value, int type, edge_data edge) {
 		this.value = value;
-		this.type= type;
+		this.type = type;
 		this.pos = position;
-		this.edge =edge;
-				
+		this.edge = edge;
+
 	}
 	
 	public CL_Pokemon() {
@@ -28,8 +30,8 @@ public class CL_Pokemon{
 		this.edge = null;
 	}
 
-	//setters and getters
-	
+	// setters and getters
+
 	public double getValue() {
 		return value;
 	}
@@ -73,27 +75,25 @@ public class CL_Pokemon{
 	}
 	/**
 	 * generate a pokemon from a json string
+	 * 
 	 * @param json
 	 * @return
 	 */
 	public static CL_Pokemon generate_from_json(String json) {
 		try {
 			JSONObject data = new JSONObject(json);
-			
-			//get all the fields as their types
+
+			// get all the fields as their types
 			double value = data.getDouble("value");
 			int type = data.getInt("type");
 			Point3D pos = new Point3D(data.getString("pos"));
-			
-			//return the pokemon object
-			return new CL_Pokemon(pos , value , type , null);
-		}
-		catch (JSONException e) {
+
+			// return the pokemon object
+			return new CL_Pokemon(pos, value, type, null);
+		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
-	
-	
+
 }

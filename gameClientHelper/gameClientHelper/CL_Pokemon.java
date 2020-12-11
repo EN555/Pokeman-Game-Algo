@@ -1,4 +1,5 @@
 package gameClientHelper;
+
 import api.edge_data;
 import gameClient.util.Point3D;
 
@@ -11,29 +12,33 @@ public class CL_Pokemon {
 	private Point3D _pos;
 	private double min_dist;
 	private int min_ro;
-	
+
 	public CL_Pokemon(Point3D p, int t, double v, double s, edge_data e) {
 		_type = t;
-	//	_speed = s;
+		// _speed = s;
 		_value = v;
 		set_edge(e);
 		_pos = p;
 		min_dist = -1;
 		min_ro = -1;
 	}
+
 	public static CL_Pokemon init_from_json(String json) {
 		CL_Pokemon ans = null;
 		try {
 			JSONObject p = new JSONObject(json);
 			int id = p.getInt("id");
 
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return ans;
 	}
-	public String toString() {return "F:{v="+_value+", t="+_type+"}";}
+
+	public String toString() {
+		return "F:{v=" + _value + ", t=" + _type + "}";
+	}
+
 	public edge_data get_edge() {
 		return _edge;
 	}
@@ -45,9 +50,15 @@ public class CL_Pokemon {
 	public Point3D getLocation() {
 		return _pos;
 	}
-	public int getType() {return _type;}
+
+	public int getType() {
+		return _type;
+	}
+
 //	public double getSpeed() {return _speed;}
-	public double getValue() {return _value;}
+	public double getValue() {
+		return _value;
+	}
 
 	public double getMin_dist() {
 		return min_dist;
