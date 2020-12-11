@@ -79,7 +79,7 @@ public class Ex2_Client{
 
 		//for (1 -> 23) move on all the games
 
-		game_service game = Game_Server_Ex2.getServer(1);
+		game_service game = Game_Server_Ex2.getServer(11);
 		Ex2_Client client = new Ex2_Client(game);
 		String res = game.toString();
 		System.out.println(res);
