@@ -14,11 +14,11 @@ public class Ex2 {
 			while(gui.isRunning()) {}
 			gui.dispose();
 			game = Game_Server_Ex2.getServer(gui.getLevel());
-			game.login(Long.parseLong(gui.getID()));
+			game.login(Long.valueOf(gui.getID()).longValue());
 		}
 		else {
 			game = Game_Server_Ex2.getServer(Integer.parseInt(args[1]));
-			game.login(Long.parseLong(args[0]));
+			game.login(Long.valueOf(args[0]).longValue());
 		}
 		
 		Ex2_Client client = new Ex2_Client(game);

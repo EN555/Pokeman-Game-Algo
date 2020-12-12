@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -45,7 +46,9 @@ public class GUI extends JFrame{
 		public panel() {
 		
 		//enter the ID
-		JTextField ID_enter = new JTextField("enter ID");
+		JLabel labelID = new JLabel("Enter ID:");
+		JTextField ID_enter = new JTextField(9);
+		this.add(labelID);
 		this.add(ID_enter);
 		
 		//choose a level
