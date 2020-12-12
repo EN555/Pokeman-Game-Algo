@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import api.DWGraph_Algo;
 import api.game_service;
 import api.node_data;
-//import kotlin.OptIn;
 
 public class Ex2_Client {
 
@@ -22,7 +21,7 @@ public class Ex2_Client {
 	private double timerRel = 1; // chek every move if the agent go to it pokeman and affect on the Threed.sleep
 									// time (the goal is not to wate move call)
 	private HashSet<CL_Pokemon> to_be_picked = new HashSet<CL_Pokemon>();
-
+	
 	/**
 	 * @param game at specific level
 	 */
@@ -53,7 +52,7 @@ public class Ex2_Client {
 			}
 
 		}
-
+		frame.dispose();
 	}
 
 	/**
@@ -201,27 +200,19 @@ public class Ex2_Client {
 
 	public void moveAgents() {
 
-		boolean is_agent_eat = false;
+		//boolean is_agent_eat = false;
 
 		DWGraph_Algo ga = new DWGraph_Algo();
 		ga.init(this.arena.getGraph());
 
 		// iterate through the agents
 		for (CL_Agent agent : this.arena.getAgents()) {
-
-			// check if the agent is to eat pokemon soon
-			if (!is_agent_eat) {
-				for (CL_Pokemon pok : this.arena.getPokemons()) {
-					if (pok.getEdge().getSrc() == agent.getSrc()) {
-						is_agent_eat = true;
-						break;
-					}
-				}
-			}
+			
 
 			// if the agent has no destination
 			if (agent.getDest() == -1) {
-
+				
+				this.to_be_picked.remove(agent.current_pok);
 				CL_Pokemon min_pok = this.arena.getPokemons().get(0);
 				double min_dis = ga.shortestPathDist(agent.getSrc(), min_pok.getEdge().getSrc()) + min_pok.getEdge().getWeight();
 
@@ -237,8 +228,7 @@ public class Ex2_Client {
 				}
 
 				// set the new pokemon as the destination for the agent
-				this.to_be_picked.remove(agent.current_pok); // replace the pokemon to be picked
-				agent.current_pok = min_pok;
+				agent.current_pok = min_pok;	 // replace the pokemon to be picked
 				this.to_be_picked.add(min_pok);
 				if (agent.getSrc() == min_pok.getEdge().getSrc()) { // if on the pokemon source, set to the destination
 					game.chooseNextEdge(agent.getId(), min_pok.getEdge().getDest());
@@ -246,20 +236,13 @@ public class Ex2_Client {
 					node_data next = ga.shortestPath(agent.getSrc(), min_pok.getEdge().getSrc()).get(1);
 					game.chooseNextEdge(agent.getId(), next.getKey());
 				}
+			
 			}
-
-		if(!is_agent_eat){this.timerRel = 4;}	//check if no one need to eat soon
-		else {this.timerRel = 1.5;}
-		this.game.move();
-
-		if (!is_agent_eat) {
-			this.timerRel = 0.65;
-		} // check if no one need to eat soon
-		else {
-			this.timerRel = 1.5;
+			
 		}
+//		if(!is_agent_eat){this.timerRel = 1;}	//check if no one need to eat soon
+//		else {this.timerRel = 4;}
+		
 		this.game.move();
-
-		}
 	}
 }
