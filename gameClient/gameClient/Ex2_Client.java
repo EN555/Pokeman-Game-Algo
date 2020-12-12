@@ -53,6 +53,7 @@ public class Ex2_Client {
 			}
 
 		}
+		frame.dispose();
 
 	}
 
