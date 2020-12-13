@@ -51,7 +51,14 @@ and the graph.
 
 To see more visualization you can look here [Press Here!](https://github.com/EN555/ex2/wiki/Game-Proccess)
 
-The class **My Frame** hold the panel, this class create the frame of the panel, and the panel work on him
+The class **My Frame** hold the panel class , this class create the frame of the panel, and the panel work on him.
+
+**The client** class run the scenario with all the other class, all the proccess of the game happen there, all the strategies find there.
+
+**GUI** class oprerate all the start of the game, from the ID until the choose of the game, for more information [Press Here!](https://github.com/EN555/ex2/wiki/Game-Proccess)
+
+**Ex2** class operate the game you need to enter your ID, and to choose level and game will start, the result will update at the end of the game in the server.
+
 
 
 
