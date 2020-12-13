@@ -51,7 +51,7 @@ and the graph.
 
 To see more visualization you can look here [Press Here!](https://github.com/EN555/ex2/wiki/Game-Proccess)
 
-
+The class **My Frame** hold the panel, this class create the frame of the panel, and the panel work on him
 
 
 
