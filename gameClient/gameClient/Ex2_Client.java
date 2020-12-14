@@ -45,10 +45,8 @@ public class Ex2_Client {
 		while(game.isRunning()) {	//stop the game when the game will finish
 			this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
 			moveAgents();		//move the agents according to the map
-			
 			try {
 				frame.repaint();
-			
 				Thread.sleep((int)(this.timerRel+10));
 				this.game.move();
 			} catch (InterruptedException e) {
