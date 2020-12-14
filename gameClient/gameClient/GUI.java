@@ -47,6 +47,7 @@ public class GUI extends JFrame{
 		
 		//enter the ID
 		JLabel labelID = new JLabel("Enter ID:");
+		labelID.setSize(100, 20);
 		JTextField ID_enter = new JTextField(9);
 		this.add(labelID);
 		this.add(ID_enter);

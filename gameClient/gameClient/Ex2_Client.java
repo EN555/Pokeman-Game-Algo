@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.DWGraph_Algo;
+import api.edge_data;
 import api.game_service;
 import api.node_data;
 
@@ -18,7 +19,7 @@ public class Ex2_Client {
 	private int numberOfagents=0;
 	private int numebrOfPokmens = 0;
 	private game_service game;
-	private double timerRel = 1; // chek every move if the agent go to it pokeman and affect on the Threed.sleep
+	private double timerRel = 0; // chek every move if the agent go to it pokeman and affect on the Threed.sleep
 									// time (the goal is not to wate move call)
 	private HashSet<CL_Pokemon> to_be_picked = new HashSet<CL_Pokemon>();
 	
@@ -39,17 +40,23 @@ public class Ex2_Client {
 		frame.setVisible(true);
 
 		// start the game
-
+		int i=0;
 		game.startGame();
 		while(game.isRunning()) {	//stop the game when the game will finish
+			System.out.println(i++);
 			moveAgents();		//move the agents according to the map
 			this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
+			
 			try {
 				frame.repaint();
-				Thread.sleep((int) (100 / this.timerRel));
+			
+				Thread.sleep((int) (this.timerRel));
+				this.game.move();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			
+			
 
 		}
 		frame.dispose();
@@ -159,13 +166,13 @@ public class Ex2_Client {
 	
 	/**
 	 * @param sophPok get pokeman
-	 * @return shortest path path through all the pokeman
+	 * @return shortest path through all the pokeman
 	 */
 	public LinkedList<CL_Pokemon> shortestPathFrom(CL_Pokemon sophPok){
 		
 		Arena arena = new Arena(this.game.getGraph() , this.game.getPokemons());
 		LinkedList<CL_Pokemon> bestPath = new LinkedList<CL_Pokemon>();
-		LinkedList<CL_Pokemon> noOrder = new LinkedList<CL_Pokemon>(arena.getPokemons());
+		LinkedList<CL_Pokemon> noOrder = new LinkedList<CL_Pokemon>(arena.getPokemons());	//get all the pokemans 
 
 		noOrder.remove(sophPok);
 		
@@ -241,9 +248,29 @@ public class Ex2_Client {
 			}
 			
 		}
+
 //		if(!is_agent_eat){this.timerRel = 1;}	//check if no one need to eat soon
 //		else {this.timerRel = 4;}
 		
-		this.game.move();
+		this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
+//		
+		double min_time = Double.MAX_VALUE;
+			for(CL_Agent agent : this.arena.getAgents()) {
+				if(agent.getDest() == -1 ) throw new NullPointerException();
+			
+	
+			edge_data edge = ga.getGraph().getEdge(agent.getSrc(), agent.getDest());
+			double speed= agent.getSpeed();
+			double weight = edge.getWeight();			
+			double TimeAllPath = (weight/speed);
+			double RelativePath = ga.getGraph().getNode(agent.getDest()).getLocation().distance(agent.getPos())/ga.getGraph().getNode(agent.getDest()).getLocation().distance(ga.getGraph().getNode(agent.getSrc()).getLocation()); 
+			double TimeStay = TimeAllPath*RelativePath;
+			if(TimeStay < min_time)
+				min_time = TimeStay;
+			}
+		this.timerRel = min_time*1000;
+		
+			
+//			this.game.move();
 	}
 }
