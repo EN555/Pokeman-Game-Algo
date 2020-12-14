@@ -49,7 +49,7 @@ public class Ex2_Client {
 			try {
 				frame.repaint();
 			
-				Thread.sleep((int)(this.timerRel));
+				Thread.sleep((int)(this.timerRel+10));
 				this.game.move();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
