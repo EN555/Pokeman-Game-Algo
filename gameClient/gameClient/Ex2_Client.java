@@ -1,6 +1,7 @@
 package gameClient;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -40,18 +41,15 @@ public class Ex2_Client {
 		frame.setVisible(true);
 
 		// start the game
-		int i=0;
 		game.startGame();
 		while(game.isRunning()) {	//stop the game when the game will finish
-			//System.out.println(i++);
-			
 			this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
 			moveAgents();		//move the agents according to the map
 			
 			try {
 				frame.repaint();
 			
-				Thread.sleep((int) (this.timerRel));
+				Thread.sleep((int)(this.timerRel));
 				this.game.move();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -253,25 +251,49 @@ public class Ex2_Client {
 //		if(!is_agent_eat){this.timerRel = 1;}	//check if no one need to eat soon
 //		else {this.timerRel = 4;}
 		
-		//this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
-//		
+		this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
+		
 		double min_time = Double.MAX_VALUE;
-			for(CL_Agent agent : this.arena.getAgents()) {
-				if(agent.getDest() == -1 ) throw new NullPointerException();
-			
+			for(CL_Agent agent : this.arena.getAgents()) {			
 	
 			edge_data edge = ga.getGraph().getEdge(agent.getSrc(), agent.getDest());
 			double speed= agent.getSpeed();
 			double weight = edge.getWeight();			
 			double TimeAllPath = (weight/speed);
+			
+			//case1: hasn't pokeman on the edge
+		
 			double RelativePath = ga.getGraph().getNode(agent.getDest()).getLocation().distance(agent.getPos())/ga.getGraph().getNode(agent.getDest()).getLocation().distance(ga.getGraph().getNode(agent.getSrc()).getLocation()); 
+			
+			//case2: have pokeman on the edge
+			
+			HashSet<CL_Pokemon> pokAtSameEdge = new HashSet<CL_Pokemon>();	//insert all the pokemans that on the same edge
+			for(CL_Pokemon pok : this.arena.getPokemons()) {
+				edge_data pokEdge = pok.getEdge();
+				if(pokEdge.getDest() == agent.getDest())
+							pokAtSameEdge.add(pok);
+			}
+			
+			
+			if(!pokAtSameEdge.isEmpty()) {		//check if have pokemon on on the same edge
+				Iterator<CL_Pokemon> iter = pokAtSameEdge.iterator();
+				while(iter.hasNext()) {
+					CL_Pokemon pok = iter.next();
+					double dis = pok.getPos().distance(agent.getPos())/ga.getGraph().getNode(agent.getDest()).getLocation().distance(ga.getGraph().getNode(agent.getSrc()).getLocation()); 
+					if(dis < RelativePath) {
+					RelativePath= dis;
+					}
+				}
+			}
+			
 			double TimeStay = TimeAllPath*RelativePath;
+
 			if(TimeStay < min_time)
 				min_time = TimeStay;
-			}
-		this.timerRel = min_time*1000;
-		
 			
-//			this.game.move();
+			}
+	
+			this.timerRel = min_time*1000;
+	
+			}
 	}
-}
