@@ -1,5 +1,6 @@
 package gameClient;
 
+import java.util.AbstractMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,10 +19,10 @@ public class Ex2_Client {
 	private MyFrame frame;
 	private Arena arena;
 	private int numberOfagents=0;
-	private int numebrOfPokmens = 0;
 	private game_service game;
-	private double timerRel = 0; // chek every move if the agent go to it pokeman and affect on the Threed.sleep
-									// time (the goal is not to wate move call)
+	private double timerRel = 0; // chek every move if the agent go to it pokeman and affect on the Threed.sleep time (the goal is not to wate move call)
+	private boolean isStack = false;
+	
 	private HashSet<CL_Pokemon> to_be_picked = new HashSet<CL_Pokemon>();
 	
 	/**
@@ -32,8 +33,7 @@ public class Ex2_Client {
 		this.game = game;
 		this.numberOfagents = numberOfagents(game); //get the number of agents
 		initAgents();	//locate all the agent at specific places
-		this.arena = new Arena(this.game.getGraph() , this.game.getPokemons() , this.game.getAgents());	//update the arena field
-		this.numebrOfPokmens = numberOfPokmens(game);
+		this.arena = new Arena(this.game.getGraph() , this.game.getPokemons() , this.game.getAgents());	//update the arena fields
 
 		// get level
 
@@ -42,6 +42,7 @@ public class Ex2_Client {
 
 		// start the game
 		game.startGame();
+		int counter_if = 0 , counter_else = 0;
 		while(game.isRunning()) {	//stop the game when the game will finish
 			this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
 			moveAgents();		//move the agents according to the map
@@ -49,17 +50,19 @@ public class Ex2_Client {
 			try {
 				frame.repaint();
 			
-				Thread.sleep((int)(this.timerRel));
-				this.game.move();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			
-
+				if(this.isStack) {
+					counter_if++;
+					Thread.sleep((int)(this.timerRel));
+				}
+				else {
+					counter_else++;
+					Thread.sleep(Math.max((int)(this.timerRel) , 100));
+				}
+			} catch (InterruptedException e) {e.printStackTrace();}
+			this.game.move();
 		}
 		frame.dispose();
-
+		System.out.println(counter_if+"    "+ counter_else);
 	}
 
 	/**
@@ -207,7 +210,7 @@ public class Ex2_Client {
 
 	public void moveAgents() {
 
-		//boolean is_agent_eat = false;
+		this.isStack = false;
 
 		DWGraph_Algo ga = new DWGraph_Algo();
 		ga.init(this.arena.getGraph());
@@ -244,12 +247,14 @@ public class Ex2_Client {
 					game.chooseNextEdge(agent.getId(), next.getKey());
 				}
 			
+				//check if an agent is stack 
+				AbstractMap.SimpleEntry<Integer, Integer> current_edge = new AbstractMap.SimpleEntry<Integer, Integer>(agent.getSrc() ,agent.getDest());
+				if(agent.pre_pre_edge != null && agent.pre_pre_edge.equals(current_edge)) {this.isStack = true;}
+				agent.pre_pre_edge = agent.pre_edge;
+				agent.pre_edge = current_edge;
 			}
 			
 		}
-
-//		if(!is_agent_eat){this.timerRel = 1;}	//check if no one need to eat soon
-//		else {this.timerRel = 4;}
 		
 		this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
 		

@@ -54,7 +54,7 @@ public class GUI extends JFrame{
 		
 		//choose a level
 		JComboBox<Integer> level_choose = new JComboBox<Integer>();
-		for(int i = 0; i < 23; i++) {level_choose.addItem(i);}
+		for(int i = 0; i <= 23; i++) {level_choose.addItem(i);}
 		this.add(level_choose);
 		
 		//start game button
