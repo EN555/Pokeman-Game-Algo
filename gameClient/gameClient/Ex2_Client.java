@@ -270,7 +270,7 @@ public class Ex2_Client {
 			HashSet<CL_Pokemon> pokAtSameEdge = new HashSet<CL_Pokemon>();	//insert all the pokemans that on the same edge
 			for(CL_Pokemon pok : this.arena.getPokemons()) {
 				edge_data pokEdge = pok.getEdge();
-				if(pokEdge.getDest() == agent.getDest())
+				if(pokEdge.getDest() == agent.getDest() && pokEdge.getSrc() == agent.getSrc())
 							pokAtSameEdge.add(pok);
 			}
 			
