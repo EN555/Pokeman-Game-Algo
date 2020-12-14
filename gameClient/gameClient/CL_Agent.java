@@ -1,5 +1,7 @@
 package gameClient;
 
+import java.util.AbstractMap;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,6 +17,8 @@ public class CL_Agent {
 	private final double speed;
 	private geo_location pos;
 	CL_Pokemon current_pok;
+	AbstractMap.SimpleEntry<Integer, Integer> pre_edge;
+	AbstractMap.SimpleEntry<Integer, Integer> pre_pre_edge;
 
 	// ***** constructors ******
 
