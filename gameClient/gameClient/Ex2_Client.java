@@ -43,9 +43,10 @@ public class Ex2_Client {
 		int i=0;
 		game.startGame();
 		while(game.isRunning()) {	//stop the game when the game will finish
-			System.out.println(i++);
-			moveAgents();		//move the agents according to the map
+			//System.out.println(i++);
+			
 			this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
+			moveAgents();		//move the agents according to the map
 			
 			try {
 				frame.repaint();
@@ -239,7 +240,7 @@ public class Ex2_Client {
 				agent.current_pok = min_pok;	 // replace the pokemon to be picked
 				this.to_be_picked.add(min_pok);
 				if (agent.getSrc() == min_pok.getEdge().getSrc()) { // if on the pokemon source, set to the destination
-					game.chooseNextEdge(agent.getId(), min_pok.getEdge().getDest());
+					game.chooseNextEdge(agent.getId(),min_pok.getEdge().getDest());
 				} else { // if not, set to the source
 					node_data next = ga.shortestPath(agent.getSrc(), min_pok.getEdge().getSrc()).get(1);
 					game.chooseNextEdge(agent.getId(), next.getKey());
@@ -252,7 +253,7 @@ public class Ex2_Client {
 //		if(!is_agent_eat){this.timerRel = 1;}	//check if no one need to eat soon
 //		else {this.timerRel = 4;}
 		
-		this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
+		//this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
 //		
 		double min_time = Double.MAX_VALUE;
 			for(CL_Agent agent : this.arena.getAgents()) {
