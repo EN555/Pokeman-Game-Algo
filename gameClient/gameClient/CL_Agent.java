@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.Point3D;
+import api.edge_data;
 import api.geo_location;
 
 public class CL_Agent {
@@ -17,8 +18,8 @@ public class CL_Agent {
 	private final double speed;
 	private geo_location pos;
 	CL_Pokemon current_pok;
-	AbstractMap.SimpleEntry<Integer, Integer> pre_edge;
-	AbstractMap.SimpleEntry<Integer, Integer> pre_pre_edge;
+	edge_data pre_edge;
+	edge_data pre_pre_edge;
 
 	// ***** constructors ******
 

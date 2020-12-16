@@ -78,11 +78,11 @@ public class Edge implements edge_data {
 
 	@Override
 	public boolean equals(Object other) {
-		if (!(other instanceof Edge)) {
+		if (!(other instanceof edge_data)) {
 			return false;
 		}
-		Edge O = (Edge) other;
-		return (this.dest == O.dest && this.src == O.src);
+		edge_data O = (edge_data) other;
+		return (this.dest == O.getDest() && this.src == O.getSrc());
 	}
 
 	public String toString() {
