@@ -70,7 +70,7 @@ public class CL_Pokemon {
 				this.getPos().y() == ((CL_Pokemon)(o)).getPos().y()) { 
 							return true;
 		}
-
+	
 	return false;
 	}
 	/**

@@ -21,7 +21,7 @@ public class Ex2_Client {
 	private int numberOfagents=0;
 	private game_service game;
 	private double timerRel = 0; // chek every move if the agent go to it pokeman and affect on the Threed.sleep time (the goal is not to wate move call)
-	private boolean isStack = false;
+	private boolean isStuck = false;
 	
 	private HashSet<CL_Pokemon> to_be_picked = new HashSet<CL_Pokemon>();
 	
@@ -43,25 +43,29 @@ public class Ex2_Client {
 		// start the game
 		game.startGame();
 		int counter_if = 0 , counter_else = 0;
+		
 		while(game.isRunning()) {	//stop the game when the game will finish
 			this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
 			moveAgents();		//move the agents according to the map
+			
 			try {
 				frame.repaint();
 			
-				if(this.isStack) {
+				if(this.isStuck) {
 					counter_if++;
 					Thread.sleep((int)(this.timerRel));
 				}
 				else {
 					counter_else++;
-					Thread.sleep(Math.max((int)(this.timerRel) , 100));
+					Thread.sleep((int)Math.max((int)(this.timerRel) , 100));
 				}
 			} catch (InterruptedException e) {e.printStackTrace();}
 			this.game.move();
 		}
 		frame.dispose();
+		//debug
 		System.out.println(counter_if+"    "+ counter_else);
+		//
 	}
 
 	/**
@@ -209,7 +213,7 @@ public class Ex2_Client {
 
 	public void moveAgents() {
 
-		this.isStack = false;
+		this.isStuck = false;
 
 		DWGraph_Algo ga = new DWGraph_Algo();
 		ga.init(this.arena.getGraph());
@@ -227,7 +231,7 @@ public class Ex2_Client {
 
 				// check each pokemon
 				for (CL_Pokemon pok : this.arena.getPokemons()) {
-					if (!this.to_be_picked.contains(pok)) { // make sure no other agent is on it's way to pick this pokemon
+					if (!this.to_be_picked.contains(pok) && !pokEatEdge(pok)) { // make sure no other agent is on it's way to pick this pokemon
 						double dis = ga.shortestPathDist(agent.getSrc(), pok.getEdge().getSrc()) + pok.getEdge().getWeight(); // calculate the distance to the pokemon
 						if (dis < min_dis && dis != -1) { // if lower then the min, set as the min
 							min_pok = pok;
@@ -246,9 +250,9 @@ public class Ex2_Client {
 					game.chooseNextEdge(agent.getId(), next.getKey());
 				}
 			
-				//check if an agent is stack 
+				//check if an agent is stuck 
 				AbstractMap.SimpleEntry<Integer, Integer> current_edge = new AbstractMap.SimpleEntry<Integer, Integer>(agent.getSrc() ,agent.getDest());
-				if(agent.pre_pre_edge != null && agent.pre_pre_edge.equals(current_edge)) {this.isStack = true;}
+				if(agent.pre_pre_edge != null && agent.pre_pre_edge.equals(current_edge)) {this.isStuck = true;}
 				agent.pre_pre_edge = agent.pre_edge;
 				agent.pre_edge = current_edge;
 			}
@@ -300,4 +304,20 @@ public class Ex2_Client {
 			this.timerRel = min_time*1000;
 	
 			}
+	
+		/**
+		 * @param pok - the function get pokeman 
+		 * @return if this pokeman founded in edge that another pokeman founded on him return true
+		 */
+		public boolean pokEatEdge(CL_Pokemon pok) {
+			boolean isTrue = false;
+			edge_data edgeCenter = pok.getEdge();
+			Iterator<CL_Pokemon> iter = this.to_be_picked.iterator();
+			while(iter.hasNext()) {
+				CL_Pokemon currPok = iter.next();
+				if(currPok.getEdge().getSrc() == edgeCenter.getSrc() && currPok.getEdge().getDest() == edgeCenter.getDest())
+					isTrue =  true;		//check if their on he same edge return true
+			}
+			return isTrue;
+		}
 	}

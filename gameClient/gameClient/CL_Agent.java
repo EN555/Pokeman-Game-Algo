@@ -73,6 +73,16 @@ public class CL_Agent {
 	public double getSpeed() {
 		return speed;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(this.getPos().x() == ((CL_Pokemon)o).getPos().x() &&
+				this.getPos().y() == ((CL_Pokemon)(o)).getPos().y()) { 
+							return true;
+		}
+
+	return false;
+	}
 
 	/**
 	 * generate an Agent from a json string
