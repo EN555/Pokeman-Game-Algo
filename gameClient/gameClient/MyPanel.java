@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import api.node_data;
@@ -15,6 +16,7 @@ public class MyPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	private JFrame frame;
 	private int frame_width;
 	private int frame_height;
 
@@ -35,11 +37,12 @@ public class MyPanel extends JPanel {
 	private int offSetY;
 	private int radios;
 
-	public MyPanel(int frame_width, int frame_height, Arena arena, game_service game) {
-		this.frame_width = frame_width;
-		this.frame_height = frame_height;
-		this.arena = arena;
+	public MyPanel(JFrame frame, Arena arena, game_service game) {
+		this.frame = frame;
+		this.frame_width = frame.getWidth();
+		this.frame_height = frame.getHeight();
 		this.game = game;
+		this.arena = arena;
 
 		this.radios = (frame_width + frame_height) / 70;
 		this.offSetX = frame_width / 10;
@@ -49,6 +52,18 @@ public class MyPanel extends JPanel {
 
 		calculate_factor();
 	}
+	
+	private void update_data() {
+		this.frame_width = frame.getWidth();
+		this.frame_height = frame.getHeight();
+
+		this.radios = (frame_width + frame_height) / 70;
+		this.offSetX = frame_width / 10;
+		this.offSetY = frame_height / 10;
+
+		calculate_factor();
+	}
+	
 
 	/**
 	 * calculate the factor to multiply the positions in order the fit the frame
@@ -122,6 +137,7 @@ public class MyPanel extends JPanel {
 
 	@Override
 	public void paint(Graphics g) {
+		update_data();
 		paint_nodes(g);
 		paint_edges(g);
 		paints_pokemons(g);

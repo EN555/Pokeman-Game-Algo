@@ -23,7 +23,7 @@ public class MyFrame extends JFrame {
 		this.setLocation((int) (screenSize.width / 4), (int) (screenSize.height / 4)); // update it to the middle of the
 																						// screen
 
-		MyPanel panel = new MyPanel(this.getWidth(), this.getHeight(), arena, game);
+		MyPanel panel = new MyPanel(this, arena, game);
 		this.add(panel);
 	}
 

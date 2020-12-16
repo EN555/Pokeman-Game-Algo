@@ -23,7 +23,7 @@ public class Ex2_Client {
 	private double timerRel = 0; // chek every move if the agent go to it pokeman and affect on the Threed.sleep time (the goal is not to wate move call)
 	private boolean isStack = false;
 	
-	private HashSet<CL_Pokemon> to_be_picked = new HashSet<CL_Pokemon>();
+	private HashSet<edge_data> to_be_picked = new HashSet<edge_data>();
 	
 	/**
 	 * @param game at specific level
@@ -222,13 +222,14 @@ public class Ex2_Client {
 			// if the agent has no destination
 			if (agent.getDest() == -1) {
 				
-				this.to_be_picked.remove(agent.current_pok);
+				if(agent.pre_edge != null)
+					this.to_be_picked.remove(this.arena.getGraph().getEdge(agent.pre_edge.getKey(), agent.pre_edge.getValue()));
 				CL_Pokemon min_pok = this.arena.getPokemons().get(0);
 				double min_dis = ga.shortestPathDist(agent.getSrc(), min_pok.getEdge().getSrc()) + min_pok.getEdge().getWeight();
 
 				// check each pokemon
 				for (CL_Pokemon pok : this.arena.getPokemons()) {
-					if (!this.to_be_picked.contains(pok)) { // make sure no other agent is on it's way to pick this pokemon
+					if (!this.to_be_picked.contains(pok.getEdge())) { // make sure no other agent is on it's way to pick this pokemon
 						double dis = ga.shortestPathDist(agent.getSrc(), pok.getEdge().getSrc()) + pok.getEdge().getWeight(); // calculate the distance to the pokemon
 						if (dis < min_dis && dis != -1) { // if lower then the min, set as the min
 							min_pok = pok;
@@ -239,7 +240,7 @@ public class Ex2_Client {
 
 				// set the new pokemon as the destination for the agent
 				agent.current_pok = min_pok;	 // replace the pokemon to be picked
-				this.to_be_picked.add(min_pok);
+				this.to_be_picked.add(min_pok.getEdge());
 				if (agent.getSrc() == min_pok.getEdge().getSrc()) { // if on the pokemon source, set to the destination
 					game.chooseNextEdge(agent.getId(),min_pok.getEdge().getDest());
 				} else { // if not, set to the source
