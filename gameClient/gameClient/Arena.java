@@ -1,5 +1,6 @@
 package gameClient;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -153,8 +154,24 @@ public class Arena {
 	 * @param json string of all the agents update the field agent of the class
 	 */
 	public void setAgents(String json, String json2) {
+		
+		//save the old agents
+		HashMap<Integer , CL_Agent> old_agens = new HashMap<Integer , CL_Agent>();
+		for(CL_Agent agent : this.agents) {
+			old_agens.put(agent.getId(), agent);
+		}
+		
+		//get the updated agents
 		read_agents(json);
 		read_pokemons(json2);
+		
+		//set the additional data not provided by the server
+		for(CL_Agent agent : this.agents) {
+			agent.current_pok = old_agens.get(agent.getId()).current_pok;
+			agent.pre_edge = old_agens.get(agent.getId()).pre_edge;
+			agent.pre_pre_edge = old_agens.get(agent.getId()).pre_pre_edge;
+		}
+		
 	}
 
 	/**
@@ -183,5 +200,5 @@ public class Arena {
 			e.printStackTrace();
 		}
 	}
-
+	
 }

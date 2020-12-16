@@ -42,34 +42,20 @@ public class Ex2_Client {
 		frame.setVisible(true);	// start the frame for the game
 		game.startGame();		// start the game
 
-		//debug
-		int counter_if = 0 , counter_else = 0;
-		//
-
 		while(game.isRunning()) {	//stop the game when the game will finish
 			
 			this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());	//update the arena
 			moveAgents();															//set the agents targets
-			this.timerRel = timeToNextPick() * 1000;								//
+			agent_stack();															//check if any agent is stack
+			this.timerRel = timeToNextPick() * 1000;								//find the number of mili seconds to next pick
 			frame.repaint();														//repaint the farme
 
 			try {
 
 				if(this.isStack) {	//if an agent is stack on one edge, sleep less to allow him to pick the pokemon
-
-					//debug
-					counter_if++;
-					//
-
 					Thread.sleep((int)(this.timerRel));
 				}
 				else {	//if an agent is not stack on one edge, sleep 1/10 of a second, or time needed for the closest agent to pick his pokemon
-
-					//debug
-					counter_else++;
-
-					System.out.println(this.to_be_picked);
-					//
 
 					Thread.sleep(Math.max((int)(this.timerRel) , 100));
 				}
@@ -81,11 +67,6 @@ public class Ex2_Client {
 
 		//the game finished - remove the frame
 		frame.dispose();
-
-		
-		//debug
-		System.out.println(counter_if+"    "+ counter_else);
-		//
 
 	}
 
@@ -243,18 +224,13 @@ public class Ex2_Client {
 	 */
 	public void moveAgents() {
 
-		this.isStuck = false;
+		this.isStack = false;
 
 		DWGraph_Algo ga = new DWGraph_Algo();
 		ga.init(this.arena.getGraph());
 
 		// iterate through the agents
 		for (CL_Agent agent : this.arena.getAgents()) {	
-			
-			//debug
-			//System.out.println(agent.pre_edge);
-			//
-			
 			if (agent.getDest() == -1) {	// if the agent has no destination
 
 
@@ -266,18 +242,25 @@ public class Ex2_Client {
 				}
 
 				setAgentDest(agent , ga);	//set the agent's destination
-
-				//update the arena
-				this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());
-				
-				//check if the agent is stack 
-				this.isStack |= isStack(agent);
 			}
 
 		}
-
+		this.arena.setAgents(this.game.getAgents(), this.game.getPokemons());	//update the arena
 	}
 
+	/**
+	 * check if any of the agents are stack
+	 */
+	private void agent_stack() {
+		this.isStack = false;
+		for (CL_Agent agent : this.arena.getAgents()) {
+			if(agent.getPos().equals(this.arena.getGraph().getNode(agent.getSrc()).getLocation()))
+			this.isStack |= isStack(agent);			//check if the agent is stack 
+		}
+	}
+	
+	
+	
 	/**
 	 * 
 	 * @param agent
@@ -324,11 +307,6 @@ public class Ex2_Client {
 			node_data next = ga.shortestPath(agent.getSrc(), min_pok.getEdge().getSrc()).get(1);
 			game.chooseNextEdge(agent.getId(), next.getKey());
 		}
-	
-		//debug
-		this.arena.setAgents(game.getAgents(), game.getPokemons());
-		System.out.println("setAgentDest : " + agent.getDest());
-		//
 	}
 
 	/**
@@ -341,7 +319,7 @@ public class Ex2_Client {
 		boolean stack;
 
 		edge_data current_edge = this.arena.getGraph().getEdge(agent.getSrc(), agent.getDest());	//get the agent's edge
-
+		
 		if(agent.pre_pre_edge != null && agent.pre_pre_edge.equals(current_edge)) {stack = true;}	//if the same edge as before , set as stack
 		else {stack = false;}
 
@@ -364,6 +342,7 @@ public class Ex2_Client {
 
 			//get some data
 			edge_data edge = this.arena.getGraph().getEdge(agent.getSrc(), agent.getDest()); 	//the agent's edge
+			
 			double edge_dis = this.arena.getGraph().getNode(edge.getDest()).getLocation().distance(
 					this.arena.getGraph().getNode(edge.getSrc()).getLocation());		//the edge distance
 			double speed= agent.getSpeed();														//the agent's speed
