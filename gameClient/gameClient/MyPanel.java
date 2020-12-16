@@ -53,7 +53,7 @@ public class MyPanel extends JPanel {
 		calculate_factor();
 	}
 	
-	private void update_data() {
+	public void update_data() {
 		this.frame_width = frame.getWidth();
 		this.frame_height = frame.getHeight();
 
@@ -137,7 +137,6 @@ public class MyPanel extends JPanel {
 
 	@Override
 	public void paint(Graphics g) {
-		update_data();
 		paint_nodes(g);
 		paint_edges(g);
 		paints_pokemons(g);
