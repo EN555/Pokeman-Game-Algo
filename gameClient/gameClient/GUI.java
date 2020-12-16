@@ -12,6 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ * the start menu for the game 
+ * @author nir son
+ *
+ */
 public class GUI extends JFrame{
 
 	private static final long serialVersionUID = 1L;
@@ -20,12 +25,17 @@ public class GUI extends JFrame{
 	private volatile String ID;
 	private volatile boolean isRunning = true;
 	
+	//constructor
 	public GUI() {
+		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//set the dimensions of the frame
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setSize((int) (screenSize.width / 2), (int) (screenSize.height / 2)); // the size of the frame will be half of the screen
 		this.setLocation((int) (screenSize.width / 4), (int) (screenSize.height / 4)); // update it to the middle of the screen
 		
+		//add the panel
 		this.add(new panel());
 		this.setVisible(true);
 	}
@@ -38,7 +48,11 @@ public class GUI extends JFrame{
 	public boolean isRunning() {return isRunning;}
 	public void setRunning(boolean isRunning) {this.isRunning = isRunning;}
 
-
+	/**
+	 * the panel of the start menu
+	 * @author nir son
+	 *
+	 */
 	private class panel extends JPanel{
 		
 		private static final long serialVersionUID = 1L;
