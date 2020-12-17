@@ -154,66 +154,68 @@ public class Ex2_Client {
 		//move on all the pokmens in the graph
 
 		LinkedList<CL_Pokemon> list = new LinkedList<CL_Pokemon>();
-		LinkedList<CL_Pokemon> optList = new LinkedList<CL_Pokemon>();
+		LinkedList<CL_Pokemon> optList = new LinkedList<CL_Pokemon>();		//list that contain all the optimal order of the pokemans
 
 		for(int i= 0 ; i < arena.getPokemons().size() ; i++) {
 
-			list=  shortestPathFrom(arena.getPokemons().get(i));
+			list=  shortestPathFrom(arena.getPokemons().get(i));		//get every iteration pokeman and return the optimum way to move from this pokeman on all the rest pokeman
 			ListIterator<CL_Pokemon> iterList = list.listIterator();
 			CL_Pokemon a = iterList.next();			
-			while(iterList.hasNext()) {
+			while(iterList.hasNext()) {		//move on all the pokemans in the list and calculate the distance between them  
 				CL_Pokemon b = iterList.next();
-				distanceIn += alg.shortestPathDist(a.getEdge().getSrc(), b.getEdge().getDest());
+				distanceIn += alg.shortestPathDist(a.getEdge().getSrc(), b.getEdge().getDest());	//add the the current distance to the other distances
 				a=b;
 			}
 
-			if(distanceIn < distanceOutter) {
+			if(distanceIn < distanceOutter) {		//check if this linked list distance better than the other
 				distanceOutter = distanceIn;
 				optList = list;
-
 			}
+			distanceIn = 0; 	//initial the distancIn for the new check 
 		}
 
 		return optList;
 	}
 
 	/**
-	 * @param sophPok get pokeman
+	 * @param sophPok - get pokeman
 	 * @return shortest path through all the pokeman
 	 */
 	public LinkedList<CL_Pokemon> shortestPathFrom(CL_Pokemon sophPok){
 
-		Arena arena = new Arena(this.game.getGraph() , this.game.getPokemons());
+		Arena arena = new Arena(this.game.getGraph() , this.game.getPokemons());		//update arena on the current state of the pokemans
 		LinkedList<CL_Pokemon> bestPath = new LinkedList<CL_Pokemon>();
 		LinkedList<CL_Pokemon> noOrder = new LinkedList<CL_Pokemon>(arena.getPokemons());	//get all the pokemans 
 
-		noOrder.remove(sophPok);
+		noOrder.remove(sophPok);		//remove the current pok that want to strat from him 
 
 		ListIterator<CL_Pokemon> iterNoOrder = noOrder.listIterator();
 		DWGraph_Algo alg = new DWGraph_Algo();
 		alg.init(arena.getGraph());
-		CL_Pokemon pokInn = sophPok;
+		CL_Pokemon pokInn = sophPok;	
 		double innerDis= Double.MAX_VALUE;
-		bestPath.add(sophPok);
+		bestPath.add(sophPok);	//add to sighn that we start from him 
 		CL_Pokemon optTemp= pokInn;
 		int size = noOrder.size();
-
+		
+		//move on all the pokeman and check them in relative to the rest 
+		
 		for(int i =0  ; i< size ; i++) {
 
 			while(iterNoOrder.hasNext()) {
 
-				CL_Pokemon tempPok = iterNoOrder.next();
-				if(alg.shortestPathDist(pokInn.getEdge().getDest(), tempPok.getEdge().getSrc())< innerDis) {
+				CL_Pokemon tempPok = iterNoOrder.next();	//get the first pok
+				if(alg.shortestPathDist(pokInn.getEdge().getDest(), tempPok.getEdge().getSrc())< innerDis) {	//check if this pok lower than the innerdistance
 					innerDis = 	alg.shortestPathDist(pokInn.getEdge().getDest(), tempPok.getEdge().getSrc());
-					optTemp = tempPok;
+					optTemp = tempPok;		//if he lowert than the previous update optTemp
 				}
 
 			}
-			innerDis = Double.MAX_VALUE;
+			innerDis = Double.MAX_VALUE;		//initial the inner distance
 			pokInn = optTemp;
-			bestPath.add(pokInn);
+			bestPath.add(pokInn);				//add the best next pokeamon
 			noOrder.remove(pokInn);
-			iterNoOrder = noOrder.listIterator();	
+			iterNoOrder = noOrder.listIterator();		//init the iterator
 		}
 
 		return bestPath;
