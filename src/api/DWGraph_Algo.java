@@ -201,20 +201,20 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
 
 		///
 	
-    public LinkedList<LinkedList<node_data>> dfs_alg(directed_weighted_graph graph, LinkedList<node_data> list){
-    	LinkedList<LinkedList<node_data>> res = new LinkedList<LinkedList<node_data>>();
+    public LinkedList<LinkedList<Integer>> dfs_alg(directed_weighted_graph graph, LinkedList<node_data> list){
+    	LinkedList<LinkedList<Integer>> res = new LinkedList<LinkedList<Integer>>();
     	for (node_data node: graph.getV()) {node.setTag(0); node.setInfo(Colors.WHITE.toString()); node.setWeight(0);}
     	this.time =0;
     	Iterator<node_data> iter_arr = list.iterator();
     	while(iter_arr.hasNext()){
     		node_data node = iter_arr.next();
-    		if(node.getInfo().equals(Colors.WHITE.toString())) {node.setTag(this.time); res.add(rec_dfs(graph, node,new LinkedList<node_data>()));}
+    		if(node.getInfo().equals(Colors.WHITE.toString())) {node.setTag(this.time); res.add(rec_dfs(graph, node,new LinkedList<Integer>()));}
     	} 
     	return res;
     }
     
-    public LinkedList<node_data> rec_dfs(directed_weighted_graph graph, node_data node, LinkedList<node_data> list){
-    	if(node.getInfo().equals(Colors.WHITE.toString())) {node.setInfo(Colors.GREY.toString()); node.setTag(this.time); list.add(node);this.time+=1;}
+    public LinkedList<Integer> rec_dfs(directed_weighted_graph graph, node_data node, LinkedList<Integer> list){
+    	if(node.getInfo().equals(Colors.WHITE.toString())) {node.setInfo(Colors.GREY.toString()); node.setTag(this.time); list.add(node.getKey());this.time+=1;}
     	Iterator<edge_data> it= graph.getE(node.getKey()).iterator();
     	while(it.hasNext()) {edge_data loc = it.next(); if(graph.getNode(loc.getDest()).getInfo().equals(Colors.WHITE.toString())){rec_dfs(graph, graph.getNode(loc.getDest()), list);}}
     	node.setInfo(Colors.BLACK.toString());
@@ -238,10 +238,10 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
 			return new_graph;
     }
     
-    public LinkedList<LinkedList<node_data>> connected_components(){
+    public LinkedList<LinkedList<Integer>> connected_components(){
     	if(this.g == null)
     		return null;
-    	LinkedList<LinkedList<node_data>> res = new LinkedList<LinkedList<node_data>>();
+    	LinkedList<LinkedList<Integer>> res = new LinkedList<LinkedList<Integer>>();
     	dfs_alg(this.g, new LinkedList<node_data>(this.g.getV()));
     	directed_weighted_graph rev_graph = reverse(this.g);
     	this.rec_graph = rev_graph;
@@ -254,11 +254,11 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
     	return res;
     }
        
-    public LinkedList<node_data> connected_component(int id1) {
+    public LinkedList<Integer> connected_component(int id1) {
     	if(this.g.getNode(id1)== null)
     		return null;
-    	for(LinkedList<node_data> list : this.connected_components()) {
-    		if(list.contains(this.g.getNode(id1)))
+    	for(LinkedList<Integer> list : this.connected_components()) {
+    		if(list.contains(this.g.getNode(id1).getKey()))
     			return list;
     	}
     	return null;
