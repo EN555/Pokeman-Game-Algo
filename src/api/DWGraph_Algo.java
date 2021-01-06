@@ -13,6 +13,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Stack;
+
 import com.google.gson.*;
 
 import gameClient.util.Point3D;
@@ -208,18 +211,58 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
     	Iterator<node_data> iter_arr = list.iterator();
     	while(iter_arr.hasNext()){
     		node_data node = iter_arr.next();
-    		if(node.getInfo().equals(Colors.WHITE.toString())) {node.setTag(this.time); res.add(rec_dfs(graph, node,new LinkedList<Integer>()));}
+    		if(node.getInfo().equals(Colors.WHITE.toString())) {node.setTag(this.time);node.setInfo(Colors.GREY.toString()); res.add(rec_dfs(graph, node,new LinkedList<Integer>()));}
     	} 
     	return res;
     }
     
+    public node_data sighnNode(node_data nei, directed_weighted_graph graph) {	//return node_data if found either return null
+
+    	Iterator<edge_data> iter = graph.getE(nei.getKey()).iterator();	
+    	while(iter.hasNext()) {
+			node_data tp = graph.getNode(iter.next().getDest());
+			if(tp.getInfo().equals(Colors.WHITE.toString())) {
+				tp.setInfo(Colors.GREY.toString());
+				this.time+=1;
+				tp.setTag(this.time);
+				return tp;
+			}   	
+    	}
+    	return null;
+    }
+
     public LinkedList<Integer> rec_dfs(directed_weighted_graph graph, node_data node, LinkedList<Integer> list){
-    	if(node.getInfo().equals(Colors.WHITE.toString())) {node.setInfo(Colors.GREY.toString()); node.setTag(this.time); list.add(node.getKey());this.time+=1;}
-    	Iterator<edge_data> it= graph.getE(node.getKey()).iterator();
-    	while(it.hasNext()) {edge_data loc = it.next(); if(graph.getNode(loc.getDest()).getInfo().equals(Colors.WHITE.toString())){rec_dfs(graph, graph.getNode(loc.getDest()), list);}}
-    	node.setInfo(Colors.BLACK.toString());
-    	node.setWeight(this.time);		//represent f[v]
-    	this.time++;
+    	
+    	list.add(node.getKey());
+    	
+    	Stack<node_data> q = new Stack<node_data>();
+    	q.add(node);
+    	
+    	while(!q.isEmpty()) { 		
+    		
+    		node_data tp = sighnNode(node, graph);
+    		if(tp != null) {
+    			list.add(tp.getKey());
+    			q.add(tp);
+    		}
+    		while(tp != null) {
+    		tp = sighnNode(tp, graph);
+    		if(tp != null) {
+    		q.add(tp);
+    		list.add(tp.getKey());
+    		}
+    		}
+
+    		tp = q.pop();
+
+    		if(tp != null) {
+        		tp.setInfo(Colors.BLACK.toString());
+        		this.time+=1;
+        		tp.setWeight(this.time);
+        		}
+    		node = tp;
+    		}
+    	
     	return list;
     }
 	
@@ -456,6 +499,7 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
 		Node a6 = new Node(6);
 		Node a7 = new Node(7);
 		Node a8 = new Node(8);
+		Node a9 = new Node(9);
 		graph.addNode(a0);
 		graph.addNode(a1);
 		graph.addNode(a2);
@@ -465,11 +509,14 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
 		graph.addNode(a6);
 		graph.addNode(a7);
 		graph.addNode(a8);
+		graph.addNode(a9);
 		graph.connect(0, 1, 1);
 		graph.connect(1, 2, 2);
 		graph.connect(2, 3, 3);
 		graph.connect(3, 0, 4);
-		
+		graph.connect(3, 9, 4);
+		graph.connect(9, 3, 4);
+
 		graph.connect(3, 4, 4);
 		graph.connect(4, 6, 4);
 		graph.connect(6, 4, 4);
@@ -478,6 +525,9 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
 
 		graph.connect(2, 7, 4);
 		graph.connect(2, 8, 4);
+
+		graph.connect(7, 8, 4);
+		graph.connect(8, 7, 4);
 
 		DWGraph_Algo alg= new DWGraph_Algo();
 		alg.init(graph);
