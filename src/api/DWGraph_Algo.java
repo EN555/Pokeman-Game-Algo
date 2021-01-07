@@ -238,8 +238,8 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
     	Stack<node_data> q = new Stack<node_data>();
     	q.add(node);
     	
-    	while(!q.isEmpty()) { 		
-    		
+    	while(!q.isEmpty()) { 
+ 
     		node_data tp = sighnNode(node, graph);
     		if(tp != null) {
     			list.add(tp.getKey());
@@ -260,7 +260,9 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
         		this.time+=1;
         		tp.setWeight(this.time);
         		}
-    		node = tp;
+    		if(!q.isEmpty()) {
+    		node = q.peek();
+    		}
     		}
     	
     	return list;
@@ -288,11 +290,14 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
     	dfs_alg(this.g, new LinkedList<node_data>(this.g.getV()));
     	directed_weighted_graph rev_graph = reverse(this.g);
     	this.rec_graph = rev_graph;
+    	for(node_data np : this.g.getV())
+    		this.rec_graph.getNode(np.getKey()).setWeight(np.getWeight());
         List<node_data> ord = new LinkedList<node_data>(this.rec_graph.getV());
-    	Collections.sort(ord, new Comparator<node_data>() {
+    	Collections.sort(ord, Collections.reverseOrder(new Comparator<node_data>() {
     		@Override 
-    		public int compare(node_data s1, node_data s2) { return (int)(s1.getWeight() - s2.getWeight()); }
-		});
+    		public int compare(node_data s1, node_data s2) {return (int)(s1.getWeight() - s2.getWeight()); }
+    	}));
+    	
     	res = dfs_alg(this.rec_graph, new LinkedList<node_data>(ord));
     	return res;
     }
@@ -494,40 +499,43 @@ public class DWGraph_Algo implements dw_graph_algorithms, JsonDeserializer<DWGra
 		Node a1 = new Node(1);
 		Node a2 = new Node(2);
 		Node a3 = new Node(3);
-		Node a4 = new Node(4);
-		Node a5 = new Node(5);
-		Node a6 = new Node(6);
-		Node a7 = new Node(7);
-		Node a8 = new Node(8);
-		Node a9 = new Node(9);
+//		Node a4 = new Node(4);
+//		Node a5 = new Node(5);
+//		Node a6 = new Node(6);
+//		Node a7 = new Node(7);
+//		Node a8 = new Node(8);
+//		Node a9 = new Node(9);
 		graph.addNode(a0);
 		graph.addNode(a1);
 		graph.addNode(a2);
 		graph.addNode(a3);
-		graph.addNode(a4);
-		graph.addNode(a5);
-		graph.addNode(a6);
-		graph.addNode(a7);
-		graph.addNode(a8);
-		graph.addNode(a9);
-		graph.connect(0, 1, 1);
-		graph.connect(1, 2, 2);
-		graph.connect(2, 3, 3);
-		graph.connect(3, 0, 4);
-		graph.connect(3, 9, 4);
-		graph.connect(9, 3, 4);
+//		graph.addNode(a4);
+//		graph.addNode(a5);
+//		graph.addNode(a6);
+//		graph.addNode(a7);
+//		graph.addNode(a8);
+//		graph.addNode(a9);
+		graph.connect(0, 2, 1);
+		graph.connect(2, 0, 2);
+		graph.connect(1, 2, 3);
+		graph.connect(2, 3, 4);
+//		graph.connect(3, 9, 4);
 
-		graph.connect(3, 4, 4);
-		graph.connect(4, 6, 4);
-		graph.connect(6, 4, 4);
-		graph.connect(5, 6, 4);
-		graph.connect(4, 5, 4);
-
-		graph.connect(2, 7, 4);
-		graph.connect(2, 8, 4);
-
-		graph.connect(7, 8, 4);
-		graph.connect(8, 7, 4);
+//		graph.connect(3, 4, 4);
+//		graph.connect(4, 6, 4);
+//		graph.connect(6, 4, 4);
+//		graph.connect(5, 6, 4);
+//		graph.connect(4, 5, 4);
+//
+//		
+//		graph.connect(9, 6, 4);
+//		graph.connect(6, 9, 4);
+//
+//		graph.connect(2, 7, 4);
+//		graph.connect(2, 8, 4);
+//
+//		graph.connect(7, 8, 4);
+//		graph.connect(8, 7, 4);
 
 		DWGraph_Algo alg= new DWGraph_Algo();
 		alg.init(graph);
